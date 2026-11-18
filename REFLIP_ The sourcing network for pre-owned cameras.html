@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>REFLIP: The sourcing network for pre-owned cameras</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#F3F5F7;--surface:#FFFFFF;--ink:#101A2B;--muted:#55627A;--line:#D3DAE3;--accent:#F5B700;--accent-ink:#101A2B;--danger:#B3261E;color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C1320;--surface:#151F31;--ink:#EEF2F8;--muted:#9AA8C0;--line:#2A3750;--danger:#FF8A80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0C1320;--surface:#151F31;--ink:#EEF2F8;--muted:#9AA8C0;--line:#2A3750;--danger:#FF8A80;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 "Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:600px;margin:0 auto;padding:0 20px 40px}
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+header .brand{font-weight:800;font-size:20px;letter-spacing:.06em;color:inherit;text-decoration:none}
+header nav{display:flex;gap:6px;align-items:center}
+.tbtn{font:600 14px/1 inherit;font-family:inherit;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:6px;min-height:40px;padding:0 12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.tag{color:var(--muted);font-size:14px;letter-spacing:.04em;text-transform:uppercase;margin:28px 0 0}
+h1{font-size:clamp(34px,9.5vw,52px);line-height:1.04;font-weight:800;margin:10px 0 14px;letter-spacing:-.025em}
+h2{font-size:26px;line-height:1.15;margin:0 0 10px;font-weight:800}
+h3{font-size:17px;margin:0 0 2px}
+.lead{color:var(--muted);margin:0 0 24px}
+.doors{display:grid;gap:12px}
+.door{position:relative;display:block;padding:24px 22px;background:var(--surface);border:1px solid var(--line);border-radius:8px;color:inherit;text-decoration:none;min-height:96px;transition:border-color .2s,transform .2s}
+.door:hover{border-color:var(--accent)}
+.door:active{transform:scale(.99)}
+.door b{display:block;font-size:20px;font-weight:800}
+.door span{color:var(--muted)}
+.door i{position:absolute;width:18px;height:18px;border:3px solid var(--accent)}
+.door i:nth-of-type(1){top:8px;right:8px;border-left:0;border-bottom:0}
+.door i:nth-of-type(2){bottom:8px;left:8px;border-right:0;border-top:0}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.btn{display:block;width:100%;min-height:52px;background:var(--accent);color:var(--accent-ink);font:600 16px/1 inherit;font-family:inherit;border:0;border-radius:6px;padding:16px 22px;margin-top:18px;cursor:pointer}
+.btn[disabled]{opacity:.6}
+.back{display:inline-block;color:var(--muted);text-decoration:none;padding:8px 0}
+section{padding:32px 0 0;margin-top:32px;border-top:1px solid var(--line)}
+.steps{list-style:none;margin:0;padding:0}
+.steps li{padding:10px 0;color:var(--muted)}
+.steps b{color:var(--ink)}
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 18px}
+.ex div{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.ex div:last-child{border:0;font-weight:800}
+.note{color:var(--muted);font-size:14px;margin:10px 0 0}
+label{display:block;font-weight:600;margin:14px 0 6px}
+input,select,textarea{width:100%;min-height:48px;font:inherit;font-size:16px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px}
+.row{display:grid;gap:0 14px;grid-template-columns:1fr 1fr}
+@media (max-width:480px){.row{grid-template-columns:1fr}}
+.terms{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-top:20px}
+.terms p{margin:8px 0;font-size:15px}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:400;margin:16px 0 0}
+.check input{width:22px;min-height:22px;height:22px;margin-top:2px;flex:none}
+#msg{margin-top:12px;min-height:1.5em;color:var(--muted)}
+.err{color:var(--danger) !important}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px}
+.stat b{display:block;font-size:24px}
+.stat span{color:var(--muted);font-size:13px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:10px 0}
+.item b{display:block}
+.item span{color:var(--muted);display:block;font-size:15px}
+footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+.view{animation:rise .35s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.view{animation:none}.door{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="brand" href="#">REFLIP</a>
+  <nav><a class="tbtn" id="dash" href="#dashboard" hidden>Dashboard</a><button class="tbtn" id="theme" type="button" aria-label="Switch theme">Theme</button></nav>
+</header>
+<main id="app"></main>
+<footer>REFLIP is an independent sourcing and brokerage service. It does not own or store cameras, and no dealer partnership is implied unless one is confirmed to you in writing. Quotes are estimates until the camera is inspected.</footer>
+</div>
+
+<script>
+var db = null, user = null, uid = null, owner = false, unsub = null, ready = false;
+var entryType = location.hash === "#for-sellers" ? "sell" : location.hash === "#for-dealers" ? "dealer" : null;
+var app = document.getElementById("app");
+
+function el(tag, attrs, kids){
+  var n = document.createElement(tag);
+  for(var k in (attrs||{})){
+    if(k === "text") n.textContent = attrs[k];
+    else if(k === "class") n.className = attrs[k];
+    else n.setAttribute(k, attrs[k]);
+  }
+  (kids||[]).forEach(function(c){ n.appendChild(c); });
+  return n;
+}
+function field(id, label, type, opts){
+  opts = opts || {};
+  var input;
+  if(type === "select"){
+    input = el("select", {id:id});
+    opts.options.forEach(function(o){ input.appendChild(el("option", {text:o})); });
+  } else if(type === "textarea"){
+    input = el("textarea", {id:id, rows:"3"});
+  } else {
+    input = el("input", {id:id, type:type});
+    if(type === "number") input.setAttribute("inputmode","numeric");
+  }
+  return el("div", {}, [el("label", {for:id, text:label}), input]);
+}
+function val(id){ var n = document.getElementById(id); return n ? n.value.trim() : ""; }
+function show(){ var w = el("div", {class:"view"}); Array.prototype.slice.call(arguments).forEach(function(c){ w.appendChild(c); }); app.replaceChildren(w); window.scrollTo(0,0); }
+function inr(n){ return "₹" + Number(n||0).toLocaleString("en-IN"); }
+
+/* Theme */
+var themeBtn = document.getElementById("theme");
+themeBtn.addEventListener("click", function(){
+  var cur = document.documentElement.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  var next = cur === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  try { localStorage.setItem("reflip-theme", next); } catch(e){}
+});
+try { var st = localStorage.getItem("reflip-theme"); if(st) document.documentElement.setAttribute("data-theme", st); } catch(e){}
+
+/* Home */
+function home(){
+  show(
+    el("p", {class:"tag", text:"The sourcing network for pre-owned cameras"}),
+    el("h1", {text:"Used Cameras. Better Selling Opportunities."}),
+    el("p", {class:"lead", text:"REFLIP connects camera owners with businesses interested in purchasing pre-owned photography equipment."}),
+    el("div", {class:"doors"}, [
+      el("a", {class:"door", href:"#sell"}, [el("i"), el("i"), el("b", {text:"I want to sell a camera"}), el("span", {text:"Submit your camera details and receive potential dealer offers."})]),
+      el("a", {class:"door", href:"#dealer"}, [el("i"), el("i"), el("b", {text:"I buy used cameras"}), el("span", {text:"Tell us what you buy and receive sourced sellers."})])
+    ]),
+    el("section", {}, [
+      el("h2", {text:"How it works"}),
+      el("ol", {class:"steps"}, [
+        el("li", {}, [el("b", {text:"Sellers submit a camera. "}), document.createTextNode("Name your lowest payout.")]),
+        el("li", {}, [el("b", {text:"We find an interested buyer. "}), document.createTextNode("Both sides agree to the terms in writing.")]),
+        el("li", {}, [el("b", {text:"The buyer inspects and pays. "}), document.createTextNode("The seller gets the agreed payout.")])
+      ])
+    ]),
+    el("section", {}, [
+      el("h2", {text:"Example"}),
+      el("div", {class:"ex"}, [
+        el("div", {}, [el("span", {text:"Buyer’s purchase price"}), el("span", {text:"₹20,000"})]),
+        el("div", {}, [el("span", {text:"Seller’s agreed payout"}), el("span", {text:"₹17,000"})]),
+        el("div", {}, [el("span", {text:"REFLIP’s commission"}), el("span", {text:"₹3,000"})])
+      ]),
+      el("p", {class:"note", text:"Illustration only. Real prices depend on the camera and are confirmed after inspection."})
+    ])
+  );
+}
+
+/* Forms */
+function formPage(type){
+  var isSell = type === "sell";
+  var terms = isSell ? [
+    "You sell the camera for the payout you entered. REFLIP finds the buyer and keeps any amount the buyer pays above your payout.",
+    "You will not sell this camera to a buyer REFLIP introduced outside this agreement, for 6 months after the introduction.",
+    "You own the camera and the details you gave are accurate.",
+    "The buyer pays your payout to you directly after inspecting the camera. You can say no to any offer."
+  ] : [
+    "You buy the camera at the agreed price. REFLIP charges you nothing on top of it.",
+    "You pay the agreed price in two parts on the same day: the seller’s payout to the seller, and the rest to REFLIP.",
+    "You will not buy a camera REFLIP introduced directly from that seller, for 6 months after the introduction.",
+    "If the price drops after inspection, the seller’s payout stays the same and REFLIP’s part shrinks. The deal cancels if the price falls below the seller’s payout."
+  ];
+  var f = el("form", {id:"f", novalidate:"novalidate"});
+  if(isSell){
+    f.appendChild(field("model","Camera and lens","text"));
+    f.appendChild(el("div",{class:"row"},[
+      field("cond","Condition","select",{options:["Like new","Good","Fair","Has issues"]}),
+      field("price","Lowest payout you’ll accept (₹)","number")
+    ]));
+    f.appendChild(el("div",{class:"row"},[
+      field("sc","Shutter count (if known)","number"),
+      field("city","City","text")
+    ]));
+  } else {
+    f.appendChild(field("biz","Shop or business name","text"));
+    f.appendChild(field("models","Models you buy","textarea"));
+    f.appendChild(field("city","City","text"));
+  }
+  f.appendChild(field("name","Your name","text"));
+  f.appendChild(field("contact","Email or phone","text"));
+  f.appendChild(el("div",{class:"terms"},[el("b",{text:"Agreement"})].concat(terms.map(function(t){ return el("p",{text:t}); }))));
+  f.appendChild(field("sig","Type your full name to sign","text"));
+  f.appendChild(el("label",{class:"check"},[el("input",{id:"agree",type:"checkbox"}), el("span",{text:"I agree to these terms."})]));
+  var btn = el("button",{class:"btn",type:"submit",text: isSell ? "Sign and request an offer" : "Sign and join"});
+  var msg = el("div",{id:"msg",role:"status"});
+  f.appendChild(btn); f.appendChild(msg);
+  f.addEventListener("submit", function(e){
+    e.preventDefault();
+    var data = isSell
+      ? {type:"seller", camera:val("model"), condition:val("cond"), price:val("price"), shutter:val("sc"), city:val("city"), name:val("name"), contact:val("contact")}
+      : {type:"dealer", business:val("biz"), models:val("models"), city:val("city"), name:val("name"), contact:val("contact")};
+    if(!data.name || !data.contact || (isSell && (!data.camera || !data.price)) || (!isSell && !data.business)){
+      msg.className = "err"; msg.textContent = isSell ? "Add the camera, your lowest payout, your name and a contact." : "Add your business name, your name and a contact."; return;
+    }
+    if(!val("sig") || !document.getElementById("agree").checked){
+      msg.className = "err"; msg.textContent = "Tick the box and type your full name to sign."; return;
+    }
+    data.signedName = val("sig"); data.agreed = true; data.agreementVersion = "v2"; data.agreementText = terms.join(" ");
+    data.createdAt = Date.now();
+    if(!db || !uid){ fallback(data); return; }
+    btn.disabled = true; msg.className = ""; msg.textContent = "Saving…";
+    var ref = db.collection("leads").doc(uid);
+    ref.get().then(function(s){
+      var prev = (s.exists && s.data() && s.data().entries) || [];
+      return ref.set({entries: prev.concat([data])});
+    }).then(function(){
+      show(el("div",{style:"padding:28px 0"},[
+        el("h2",{text:"Request received"}),
+        el("p",{class:"lead",text: isSell ? "We’ll contact you if a dealer is interested. Nothing is final until the camera is inspected." : "You’re on the list. We’ll contact you when a matching camera is available."}),
+        entryType ? el("span") : el("a",{class:"back",href:"#",text:"Back to start"})
+      ]));
+    }).catch(function(){
+      btn.disabled = false; msg.className = "err";
+      msg.textContent = "Couldn’t save that. Check your connection and try again.";
+    });
+  });
+  show(
+    entryType ? el("span") : el("a",{class:"back",href:"#",text:"Back"}),
+    el("h2",{text: isSell ? "Sell your camera" : "Dealer sign-up"}),
+    el("p",{class:"lead",text: isSell ? "A few details, then sign. The dealer’s offer is confirmed after inspection." : "Tell us what you buy, then sign. We’ll send you sourced sellers."}),
+    f
+  );
+}
+
+/* When saving isn’t possible for this viewer, let them send the signed request back by hand */
+function fallback(data){
+  var txt = Object.keys(data).map(function(k){ return k + ": " + data[k]; }).join("\n");
+  var ta = el("textarea",{readonly:"readonly",rows:"9","aria-label":"Your signed request"});
+  ta.value = txt;
+  var status = el("div",{id:"msg",role:"status"});
+  var b = el("button",{class:"btn",type:"button",text:"Copy request"});
+  b.addEventListener("click", function(){
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch(e){}
+    status.className = ok ? "" : "err";
+    status.textContent = ok ? "Copied. Send it to the person who shared this link." : "Press and hold the text above to copy it.";
+  });
+  show(
+    el("h2",{text:"One more step"}),
+    el("p",{class:"lead",text:"This link can’t save requests directly. Copy your signed request and send it to the person who shared this link."}),
+    ta, b, status
+  );
+}
+
+/* Owner dashboard */
+function dashboard(){
+  var body = el("div");
+  show(el("a",{class:"back",href:"#",text:"Back"}), el("h2",{text:"Dashboard"}), body);
+  if(!owner || !db){ body.appendChild(el("p",{class:"lead",text:"Only the site owner can see this page."})); return; }
+  var all = [], filter = "all";
+  var stats = el("div",{class:"stats"});
+  var sel = el("select",{"aria-label":"Filter requests"});
+  [["all","All requests"],["seller","Sellers"],["dealer","Dealers"]].forEach(function(o){ var op = el("option",{value:o[0],text:o[1]}); sel.appendChild(op); });
+  var list = el("div");
+  var calc = el("div",{class:"ex"});
+  var out = el("div",{}, [el("span",{text:"REFLIP earns"}), el("span",{text:"₹0"})]);
+  var inBuy = el("input",{type:"number",inputmode:"numeric","aria-label":"Buyer price",placeholder:"Buyer pays (₹)"});
+  var inPay = el("input",{type:"number",inputmode:"numeric","aria-label":"Seller payout",placeholder:"Seller payout (₹)"});
+  function recalc(){
+    var b = Number(inBuy.value)||0, p = Number(inPay.value)||0, d = b - p;
+    out.lastChild.textContent = (b && p) ? (d >= 0 ? inr(d) : "Cancel: price is below the seller’s payout") : "₹0";
+  }
+  inBuy.addEventListener("input", recalc); inPay.addEventListener("input", recalc);
+  calc.appendChild(el("div",{style:"display:block"},[el("label",{text:"Deal calculator"}), inBuy, el("div",{style:"height:8px"}), inPay]));
+  calc.appendChild(out);
+  function draw(){
+    var s = all.filter(function(x){ return x.type === "seller"; }).length, d = all.filter(function(x){ return x.type === "dealer"; }).length;
+    stats.replaceChildren(
+      el("div",{class:"stat"},[el("b",{text:String(all.length)}), el("span",{text:"Total"})]),
+      el("div",{class:"stat"},[el("b",{text:String(s)}), el("span",{text:"Sellers"})]),
+      el("div",{class:"stat"},[el("b",{text:String(d)}), el("span",{text:"Dealers"})])
+    );
+    var rows = all.filter(function(x){ return filter === "all" || x.type === filter; });
+    list.replaceChildren();
+    if(!rows.length){ list.appendChild(el("p",{class:"lead",text:"No requests yet."})); return; }
+    rows.forEach(function(x){
+      var title = x.type === "seller" ? ("Seller: " + (x.camera||"")) : ("Dealer: " + (x.business||""));
+      var l2 = x.type === "seller" ? ((x.condition||"") + ", payout " + inr(x.price) + (x.shutter ? ", shutter " + x.shutter : "")) : (x.models||"");
+      list.appendChild(el("div",{class:"item"},[
+        el("b",{text:title}), el("span",{text:l2}),
+        el("span",{text:(x.name||"") + ", " + (x.city||"") + ", " + (x.contact||"")}),
+        el("span",{text:"Signed by " + (x.signedName||"nobody") + " on " + (x.createdAt ? new Date(x.createdAt).toLocaleString() : "")})
+      ]));
+    });
+  }
+  sel.addEventListener("change", function(){ filter = sel.value; draw(); });
+  var base = location.href.split("#")[0];
+  function linkBox(label, h){ var i = el("input",{readonly:"readonly",value:base + h,"aria-label":label}); i.addEventListener("focus", function(){ i.select(); }); return el("div",{},[el("label",{text:label}), i]); }
+  body.appendChild(el("div",{class:"item"},[el("b",{text:"Share these links"}), linkBox("Seller link","#for-sellers"), linkBox("Dealer link","#for-dealers")]));
+  body.appendChild(stats); body.appendChild(calc); body.appendChild(el("div",{style:"height:16px"})); body.appendChild(sel); body.appendChild(list);
+  list.textContent = "Loading…";
+  var t = setTimeout(function(){ list.textContent = "Still loading. Reload if this stays empty."; }, 10000);
+  unsub = db.collection("leads").onSnapshot(function(snap){
+    clearTimeout(t);
+    all = [];
+    snap.docs.forEach(function(d){ all = all.concat((d.data() || {}).entries || []); });
+    all.sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
+    draw();
+  }, function(){ clearTimeout(t); list.textContent = "Couldn’t load requests."; });
+}
+
+function route(){
+  if(unsub){ unsub(); unsub = null; }
+  var h = location.hash;
+  if(entryType){ formPage(entryType); return; }
+  if(!ready){ show(el("p",{class:"lead",text:"Loading…"})); return; }
+  if(!owner){ show(el("h2",{text:"REFLIP"}), el("p",{class:"lead",text:"Open the link you were sent to continue."})); return; }
+  if(h === "#sell") formPage("sell");
+  else if(h === "#dealer") formPage("dealer");
+  else if(h === "#dashboard") dashboard();
+  else home();
+}
+window.addEventListener("hashchange", route);
+route();
+
+(async function(){
+  try {
+    db = await claude.use("db"); user = await claude.use("user");
+    owner = user ? user.isOwner() : false; uid = user ? await user.id() : null;
+  } catch(e){ db = null; }
+  if(owner && !entryType) document.getElementById("dash").hidden = false;
+  ready = true; route();
+})();
+</script>
+</body>
+</html>
